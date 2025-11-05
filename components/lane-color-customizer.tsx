@@ -138,6 +138,47 @@ export function LaneColorCustomizer({ iconOnly = false }: { iconOnly?: boolean }
   const [lightColors, setLightColors] = useState<ColorScheme>(defaultLightColors)
   const [darkColors, setDarkColors] = useState<ColorScheme>(defaultDarkColors)
   const [activeTab, setActiveTab] = useState<"light" | "dark">("light")
+  const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("light")
+
+  useEffect(() => {
+    const detectTheme = () => {
+      const isDark = document.documentElement.classList.contains("dark")
+      const theme = isDark ? "dark" : "light"
+      setCurrentTheme(theme)
+      setActiveTab(theme)
+      return theme
+    }
+
+    const initialTheme = detectTheme()
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === "class") {
+          const newTheme = detectTheme()
+          const colors = newTheme === "dark" ? darkColors : lightColors
+          applyColors(colors, newTheme)
+        }
+      })
+    })
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    })
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "theme") {
+        detectTheme()
+      }
+    }
+
+    window.addEventListener("storage", handleStorageChange)
+
+    return () => {
+      observer.disconnect()
+      window.removeEventListener("storage", handleStorageChange)
+    }
+  }, [darkColors, lightColors])
 
   useEffect(() => {
     const savedLightColors = localStorage.getItem("kanban-light-colors")
@@ -146,15 +187,19 @@ export function LaneColorCustomizer({ iconOnly = false }: { iconOnly?: boolean }
     if (savedLightColors) {
       const parsed = JSON.parse(savedLightColors)
       setLightColors(parsed)
-      applyColors(parsed, "light")
+      if (currentTheme === "light") {
+        applyColors(parsed, "light")
+      }
     }
 
     if (savedDarkColors) {
       const parsed = JSON.parse(savedDarkColors)
       setDarkColors(parsed)
-      applyColors(parsed, "dark")
+      if (currentTheme === "dark") {
+        applyColors(parsed, "dark")
+      }
     }
-  }, [])
+  }, [currentTheme])
 
   const applyColors = (colors: ColorScheme, mode: "light" | "dark") => {
     const root = document.documentElement
@@ -173,6 +218,14 @@ export function LaneColorCustomizer({ iconOnly = false }: { iconOnly?: boolean }
     })
 
     if (isDark && root.classList.contains("dark")) {
+      Object.entries(colors).forEach(([lane, laneColors]) => {
+        const prefix = lane === "progress" ? "progress" : lane
+        Object.entries(laneColors).forEach(([property, value]) => {
+          const varName = `--lane-${prefix}-${property}`
+          root.style.setProperty(varName, value)
+        })
+      })
+    } else if (!isDark && !root.classList.contains("dark")) {
       Object.entries(colors).forEach(([lane, laneColors]) => {
         const prefix = lane === "progress" ? "progress" : lane
         Object.entries(laneColors).forEach(([property, value]) => {
@@ -204,6 +257,8 @@ export function LaneColorCustomizer({ iconOnly = false }: { iconOnly?: boolean }
     setDarkColors(preset.dark)
     applyColors(preset.light, "light")
     applyColors(preset.dark, "dark")
+    const currentColors = currentTheme === "dark" ? preset.dark : preset.light
+    applyColors(currentColors, currentTheme)
   }
 
   const handleSave = () => {
@@ -232,30 +287,30 @@ export function LaneColorCustomizer({ iconOnly = false }: { iconOnly?: boolean }
     onChange: (value: string) => void
     presets?: string[]
   }) => (
-    <div className="space-y-2">
-      <Label className="text-sm font-medium">{label}</Label>
-      <div className="flex items-center gap-3">
+    <div className="space-y-1.5">
+      <Label className="text-xs font-medium text-muted-foreground">{label}</Label>
+      <div className="flex items-center gap-2">
         <input
           type="color"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="h-10 w-20 rounded border-2 border-border cursor-pointer"
+          className="h-8 w-16 rounded border border-border cursor-pointer"
         />
         <Input
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="flex-1 font-mono text-sm"
+          className="flex-1 font-mono text-xs h-8"
           placeholder="#000000"
         />
       </div>
       {presets && presets.length > 0 && (
-        <div className="flex gap-2">
+        <div className="flex gap-1.5">
           {presets.map((preset, index) => (
             <button
               key={index}
               onClick={() => onChange(preset)}
-              className="h-8 w-8 rounded border-2 border-border hover:border-primary transition-colors cursor-pointer"
+              className="h-6 w-6 rounded border border-border hover:border-primary hover:scale-110 transition-all cursor-pointer"
               style={{ backgroundColor: preset }}
               title={`Preset ${index + 1}: ${preset}`}
             />
@@ -269,9 +324,9 @@ export function LaneColorCustomizer({ iconOnly = false }: { iconOnly?: boolean }
     const colors = activeTab === "light" ? lightColors : darkColors
 
     return (
-      <div className="space-y-4 p-4 rounded-lg border bg-card">
-        <h4 className="font-semibold text-sm uppercase tracking-wide">{label}</h4>
-        <div className="grid gap-4">
+      <div className="space-y-3 p-3 rounded-lg border bg-card/50">
+        <h4 className="font-semibold text-xs uppercase tracking-wide text-muted-foreground">{label}</h4>
+        <div className="grid gap-3">
           <ColorPicker
             label="Background"
             value={colors[lane].bg}
@@ -321,8 +376,8 @@ export function LaneColorCustomizer({ iconOnly = false }: { iconOnly?: boolean }
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
-        <DialogHeader>
+      <DialogContent className="max-w-5xl h-[85vh] flex flex-col p-0">
+        <DialogHeader className="px-6 pt-6 pb-4 border-b">
           <DialogTitle>Customize Lane Colors</DialogTitle>
           <DialogDescription>
             Choose a preset or personalize colors for each workflow state. Changes apply instantly and persist across
@@ -330,48 +385,50 @@ export function LaneColorCustomizer({ iconOnly = false }: { iconOnly?: boolean }
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 pr-4">
-          <div className="space-y-6">
+        <ScrollArea className="flex-1 px-6">
+          <div className="space-y-6 py-4">
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-primary" />
-                <h3 className="font-semibold">Color Scheme Presets</h3>
+                <h3 className="font-semibold text-sm">Color Scheme Presets</h3>
               </div>
-              <p className="text-sm text-muted-foreground">Quickly apply a harmonized color palette to all lanes</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+              <p className="text-xs text-muted-foreground">Quickly apply a harmonized color palette to all lanes</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
                 {colorPresets.map((preset) => (
                   <button
                     key={preset.name}
                     onClick={() => handleApplyPreset(preset)}
-                    className="p-4 rounded-lg border-2 border-border hover:border-primary transition-all hover:shadow-md text-left group"
+                    className="p-3 rounded-lg border-2 border-border hover:border-primary transition-all hover:shadow-md text-left group bg-card"
                   >
-                    <div className="flex gap-2 mb-2">
-                      {Object.values(activeTab === "light" ? preset.light : preset.dark).map((colors, index) => (
+                    <div className="flex gap-1 mb-2">
+                      {Object.values(currentTheme === "light" ? preset.light : preset.dark).map((colors, index) => (
                         <div
                           key={index}
-                          className="h-6 w-6 rounded border border-border"
+                          className="h-5 flex-1 rounded-sm border border-border/50"
                           style={{ backgroundColor: colors.accent }}
                         />
                       ))}
                     </div>
-                    <div className="font-semibold text-sm group-hover:text-primary transition-colors">
+                    <div className="font-semibold text-xs group-hover:text-primary transition-colors">
                       {preset.name}
                     </div>
-                    <div className="text-xs text-muted-foreground mt-1">{preset.description}</div>
+                    <div className="text-[10px] text-muted-foreground mt-0.5 leading-tight line-clamp-2">
+                      {preset.description}
+                    </div>
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="border-t pt-6">
+            <div className="border-t pt-4">
               <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "light" | "dark")} className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-2 mb-4">
                   <TabsTrigger value="light">Light Mode</TabsTrigger>
                   <TabsTrigger value="dark">Dark Mode</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="light" className="space-y-4 mt-4">
-                  <div className="grid gap-4 md:grid-cols-2">
+                <TabsContent value="light" className="space-y-3 mt-0">
+                  <div className="grid gap-3 md:grid-cols-2">
                     <LaneColorSection lane="todo" label="To Do Lane" />
                     <LaneColorSection lane="progress" label="In Progress Lane" />
                     <LaneColorSection lane="completed" label="Completed Lane" />
@@ -379,8 +436,8 @@ export function LaneColorCustomizer({ iconOnly = false }: { iconOnly?: boolean }
                   </div>
                 </TabsContent>
 
-                <TabsContent value="dark" className="space-y-4 mt-4">
-                  <div className="grid gap-4 md:grid-cols-2">
+                <TabsContent value="dark" className="space-y-3 mt-0">
+                  <div className="grid gap-3 md:grid-cols-2">
                     <LaneColorSection lane="todo" label="To Do Lane" />
                     <LaneColorSection lane="progress" label="In Progress Lane" />
                     <LaneColorSection lane="completed" label="Completed Lane" />
@@ -392,12 +449,12 @@ export function LaneColorCustomizer({ iconOnly = false }: { iconOnly?: boolean }
           </div>
         </ScrollArea>
 
-        <DialogFooter className="flex-col sm:flex-row gap-2 mt-4">
+        <DialogFooter className="flex-col sm:flex-row gap-2 px-6 py-4 border-t bg-muted/30">
           <Button variant="outline" onClick={handleReset} className="w-full sm:w-auto bg-transparent">
             <RotateCcw className="h-4 w-4 mr-2" />
             Reset to Defaults
           </Button>
-          <div className="flex gap-2 w-full sm:w-auto">
+          <div className="flex gap-2 w-full sm:w-auto sm:ml-auto">
             <Button variant="outline" onClick={() => setIsOpen(false)} className="flex-1 sm:flex-none">
               Cancel
             </Button>

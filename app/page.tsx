@@ -76,7 +76,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2 my-0 py-0">
         {/* Recent Activity */}
         <Card>
           <CardHeader>
