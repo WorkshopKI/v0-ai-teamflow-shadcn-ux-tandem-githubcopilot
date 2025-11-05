@@ -1,5 +1,6 @@
 "use client"
 
+import "./settings-overlay.css"
 import { useState, useEffect } from "react"
 import { useSettings } from "@/lib/settings-context"
 import { Button } from "@/components/ui/button"
@@ -8,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import {
   RotateCcw,
   Palette,
@@ -53,11 +54,20 @@ export function SettingsOverlay({ open, onOpenChange }: SettingsOverlayProps) {
   const [isResizingDialog, setIsResizingDialog] = useState<"left" | "right" | "top" | "bottom" | null>(null)
 
   useEffect(() => {
-    if (open) {
+    if (!open) return
+
+    if (typeof window !== "undefined") {
+      const maxWidth = Math.max(600, window.innerWidth - 120)
+      const maxHeight = Math.max(600, window.innerHeight - 120)
+
+      setDialogWidth(Math.min(1100, maxWidth))
+      setDialogHeight(Math.min(800, maxHeight))
+    } else {
       setDialogWidth(1100)
       setDialogHeight(800)
-      setPreviewWidth(320)
     }
+
+    setPreviewWidth(320)
   }, [open])
 
   useEffect(() => {
@@ -74,19 +84,21 @@ export function SettingsOverlay({ open, onOpenChange }: SettingsOverlayProps) {
         const dialogElement = document.querySelector('[role="dialog"]')
         if (!dialogElement) return
         const dialogRect = dialogElement.getBoundingClientRect()
+        const maxWidth = Math.max(600, window.innerWidth - 120)
+        const maxHeight = Math.max(600, window.innerHeight - 120)
 
         if (isResizingDialog === "left") {
           const newWidth = dialogRect.right - e.clientX
-          setDialogWidth(Math.max(800, Math.min(window.innerWidth - 100, newWidth)))
+          setDialogWidth(Math.max(600, Math.min(maxWidth, newWidth)))
         } else if (isResizingDialog === "right") {
           const newWidth = e.clientX - dialogRect.left
-          setDialogWidth(Math.max(800, Math.min(window.innerWidth - 100, newWidth)))
+          setDialogWidth(Math.max(600, Math.min(maxWidth, newWidth)))
         } else if (isResizingDialog === "top") {
           const newHeight = dialogRect.bottom - e.clientY
-          setDialogHeight(Math.max(600, Math.min(window.innerHeight - 100, newHeight)))
+          setDialogHeight(Math.max(600, Math.min(maxHeight, newHeight)))
         } else if (isResizingDialog === "bottom") {
           const newHeight = e.clientY - dialogRect.top
-          setDialogHeight(Math.max(600, Math.min(window.innerHeight - 100, newHeight)))
+          setDialogHeight(Math.max(600, Math.min(maxHeight, newHeight)))
         }
       }
     }
@@ -134,14 +146,13 @@ export function SettingsOverlay({ open, onOpenChange }: SettingsOverlayProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-[95vw] max-h-[95vh] p-0 gap-0 overflow-hidden relative bg-background/95 backdrop-blur-md"
+        className="settings-dialog-content p-0 gap-0 overflow-hidden bg-background/95 backdrop-blur-md"
         style={{
-          width: `${dialogWidth}px`,
-          height: `${dialogHeight}px`,
-          maxWidth: "none",
-          maxHeight: "none",
+          ['--dialog-width' as string]: `${dialogWidth}px`,
+          ['--dialog-height' as string]: `${dialogHeight}px`,
         }}
       >
+        <DialogTitle className="sr-only">Settings</DialogTitle>
         <div
           onMouseDown={() => setIsResizingDialog("top")}
           className="absolute left-0 top-0 z-50 w-full h-2 cursor-row-resize hover:bg-primary/20 transition-colors"
@@ -164,20 +175,20 @@ export function SettingsOverlay({ open, onOpenChange }: SettingsOverlayProps) {
 
         <div
           onMouseDown={() => setIsResizingDialog("left")}
-          className="absolute left-0 top-0 z-50 h-full w-2 cursor-col-resize hover:bg-primary/20 transition-colors"
-          style={{ marginLeft: "-4px" }}
+          className="absolute left-0 top-0 z-50 h-full w-3 cursor-col-resize hover:bg-primary/30 transition-colors"
+          style={{ marginLeft: "-6px" }}
         >
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-border p-1 opacity-0 hover:opacity-100 transition-opacity">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-border p-1.5 opacity-50 hover:opacity-100 transition-opacity shadow-sm">
             <GripVertical className="h-4 w-4 text-muted-foreground" />
           </div>
         </div>
 
         <div
           onMouseDown={() => setIsResizingDialog("right")}
-          className="absolute right-0 top-0 z-50 h-full w-2 cursor-col-resize hover:bg-primary/20 transition-colors"
-          style={{ marginRight: "-4px" }}
+          className="absolute right-0 top-0 z-50 h-full w-3 cursor-col-resize hover:bg-primary/30 transition-colors"
+          style={{ marginRight: "-6px" }}
         >
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-border p-1">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-border p-1.5 opacity-50 hover:opacity-100 transition-opacity shadow-sm">
             <GripVertical className="h-4 w-4 text-muted-foreground" />
           </div>
         </div>
@@ -187,7 +198,7 @@ export function SettingsOverlay({ open, onOpenChange }: SettingsOverlayProps) {
           <div className="flex-1 overflow-y-auto">
             <div className="p-5">
               <div className="mb-4">
-                <h1 className="font-bold tracking-tight text-2xl">Settings</h1>
+                <DialogTitle className="font-bold tracking-tight text-2xl">Settings</DialogTitle>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Customize your TeamFlow experience with personalized appearance and layout options
                 </p>

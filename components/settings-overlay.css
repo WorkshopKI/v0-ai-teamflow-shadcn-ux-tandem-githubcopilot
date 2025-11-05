@@ -1,0 +1,7 @@
+/* Override dialog positioning for settings overlay */
+.settings-dialog-content {
+    width: var(--dialog-width) !important;
+    height: var(--dialog-height) !important;
+    max-width: min(var(--dialog-width), calc(100vw - 120px)) !important;
+    max-height: min(var(--dialog-height), calc(100vh - 120px)) !important;
+}

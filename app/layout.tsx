@@ -37,7 +37,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${lora.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
+      <body
+        className={`${inter.variable} ${lora.variable} ${jetbrainsMono.variable} font-sans antialiased`}
+        suppressHydrationWarning={true}
+      >
         <Providers>
           <div className="flex h-screen overflow-hidden">
             <AppSidebar />
