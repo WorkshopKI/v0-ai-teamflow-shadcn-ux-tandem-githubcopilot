@@ -181,6 +181,11 @@
     transition: none !important;
   }
 
+  /* Add sidebar position support - reverses layout when sidebar is on right */
+  [data-sidebar-position="right"] .flex.h-screen {
+    flex-direction: row-reverse;
+  }
+
   /* Refined Kanban lane colors with muted, softer tones for reduced visual intensity */
   :root {
     /* To Do Lane - Soft cool gray-blue (neutral, calm, organized) */
