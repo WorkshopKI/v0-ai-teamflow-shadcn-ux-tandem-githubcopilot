@@ -187,7 +187,7 @@ export function SettingsOverlay({ open, onOpenChange }: SettingsOverlayProps) {
           <div className="flex-1 overflow-y-auto">
             <div className="p-5">
               <div className="mb-4">
-                <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+                <h1 className="font-bold tracking-tight text-2xl">Settings</h1>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Customize your TeamFlow experience with personalized appearance and layout options
                 </p>
@@ -557,7 +557,7 @@ export function SettingsOverlay({ open, onOpenChange }: SettingsOverlayProps) {
             <div className="h-full overflow-y-auto p-4">
               <div className="space-y-3">
                 <div>
-                  <h3 className="text-sm font-semibold">Live Preview</h3>
+                  <h3 className="font-semibold text-lg">Live Preview</h3>
                   <p className="text-xs text-muted-foreground">See your changes in real-time</p>
                 </div>
 
