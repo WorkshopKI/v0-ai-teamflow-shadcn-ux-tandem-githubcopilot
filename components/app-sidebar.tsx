@@ -5,11 +5,6 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import {
-  LayoutDashboard,
-  CheckSquare,
-  Workflow,
-  Bot,
-  FileText,
   Settings,
   Users,
   PanelLeftClose,
@@ -17,13 +12,7 @@ import {
   Plus,
   ChevronDown,
   ChevronRight,
-  Monitor,
-  Megaphone,
-  ClipboardList,
-  Building2,
-  Sparkles,
   ArrowLeft,
-  Pencil,
   Check,
   X,
 } from "lucide-react"
@@ -38,69 +27,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { SettingsDialog } from "@/components/settings-dialog"
-
-const teamNavigation = [
-  {
-    name: "Dashboard",
-    href: "/",
-    icon: LayoutDashboard,
-  },
-  {
-    name: "Tasks",
-    href: "/tasks",
-    icon: CheckSquare,
-  },
-  {
-    name: "Workflows",
-    href: "/workflows",
-    icon: Workflow,
-  },
-  {
-    name: "Templates",
-    href: "/templates",
-    icon: FileText,
-  },
-  {
-    name: "AI Agents",
-    href: "/agents",
-    icon: Bot,
-  },
-]
-
-const teamTemplates = [
-  {
-    id: "agile",
-    name: "Agile Software Team",
-    description:
-      "Perfect for development teams using Agile methodologies with sprint planning and code review workflows",
-    icon: Monitor,
-    iconColor: "text-blue-500",
-  },
-  {
-    id: "marketing",
-    name: "Marketing Team",
-    description: "Organize campaigns, content calendars, and creative workflows with AI-powered copywriting assistance",
-    icon: Megaphone,
-    iconColor: "text-pink-500",
-  },
-  {
-    id: "blank",
-    name: "General / Blank",
-    description: "Start from scratch with a minimal setup - perfect for any team or workflow",
-    icon: ClipboardList,
-    iconColor: "text-gray-500",
-  },
-  {
-    id: "government",
-    name: "Government Processing",
-    description: "For processing citizen and business applications with 10 specialized AI assistants",
-    icon: Building2,
-    iconColor: "text-purple-500",
-  },
-]
+import { SettingsOverlay } from "@/components/settings-overlay"
+import { teamTemplates, teamNavigation } from "@/data/templates" // Import teamTemplates and teamNavigation
 
 interface Team {
   id: string
@@ -113,9 +42,8 @@ export function AppSidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isTeamExpanded, setIsTeamExpanded] = useState(true)
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false)
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
-  const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false)
-
   const [sidebarWidth, setSidebarWidth] = useState(256) // Default 256px (w-64)
   const [isResizing, setIsResizing] = useState(false)
   const sidebarRef = useRef<HTMLDivElement>(null)
@@ -465,7 +393,7 @@ export function AppSidebar() {
                                 onClick={() => handleStartRename(team.id, team.name)}
                                 title="Rename team"
                               >
-                                <Pencil className="h-3 w-3" />
+                                <Users className="h-3 w-3" />
                               </Button>
                             </>
                           )}
@@ -506,8 +434,11 @@ export function AppSidebar() {
 
         <div className="border-t border-sidebar-border p-4">
           <button
-            onClick={() => setIsSettingsDialogOpen(true)}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+            onClick={() => setIsSettingsOpen(true)}
+            className={cn(
+              "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+              "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground",
+            )}
             title={isCollapsed ? "Settings" : undefined}
           >
             <Settings className="h-5 w-5 shrink-0" />
@@ -523,6 +454,8 @@ export function AppSidebar() {
           )}
         </div>
       </div>
+
+      <SettingsOverlay open={isSettingsOpen} onOpenChange={setIsSettingsOpen} />
 
       <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -552,7 +485,7 @@ export function AppSidebar() {
 
           <div className="space-y-3 py-4">
             {teamTemplates.map((template) => (
-              <Card
+              <div
                 key={template.id}
                 className={cn(
                   "cursor-pointer transition-all hover:border-primary",
@@ -560,32 +493,30 @@ export function AppSidebar() {
                 )}
                 onClick={() => setSelectedTemplate(template.id)}
               >
-                <CardHeader className="pb-4">
-                  <div className="flex items-start gap-4">
-                    <div
-                      className={cn(
-                        "flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-muted",
-                        template.iconColor,
-                      )}
-                    >
-                      <template.icon className="h-6 w-6" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-xl">{template.name}</CardTitle>
-                        {selectedTemplate === template.id && (
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                          </div>
-                        )}
-                      </div>
-                      <CardDescription className="mt-2 text-base">{template.description}</CardDescription>
-                    </div>
+                <div className="flex items-start gap-4">
+                  <div
+                    className={cn(
+                      "flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-muted",
+                      template.iconColor,
+                    )}
+                  >
+                    <template.icon className="h-6 w-6" />
                   </div>
-                </CardHeader>
-              </Card>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xl">{template.name}</span>
+                      {selectedTemplate === template.id && (
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+                    <span className="mt-2 text-base">{template.description}</span>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
 
@@ -600,13 +531,13 @@ export function AppSidebar() {
             </Button>
             <Button onClick={handleCreateWorkspace} disabled={!selectedTemplate} className="flex items-center gap-2">
               Create Workspace
-              <Sparkles className="h-4 w-4" />
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      <SettingsDialog open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen} />
     </>
   )
 }

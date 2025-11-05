@@ -7,7 +7,7 @@ import { CheckSquare, Workflow, Bot, Users, Zap, ArrowRight } from "lucide-react
 
 export default function DashboardPage() {
   return (
-    <div className="flex flex-col gap-6 p-8">
+    <div className="flex flex-col gap-6 p-8 py-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

@@ -26,7 +26,7 @@ const defaultSettings: AppSettings = {
   primaryColor: "#0a3874",
   accentColor: "#306bb3",
   sidebarPosition: "left",
-  spacing: "comfortable",
+  spacing: "compact", // Changed from "comfortable" to "compact" for initial load
   borderRadius: "medium",
   theme: "system",
 }
@@ -109,6 +109,13 @@ export function useSettings() {
 function applyCSSSettings(settings: AppSettings) {
   const root = document.documentElement
 
+  // Colors - directly update the theme variables
+  root.style.setProperty("--primary", settings.primaryColor)
+  root.style.setProperty("--accent", settings.accentColor)
+  root.style.setProperty("--ring", settings.primaryColor)
+  root.style.setProperty("--sidebar-primary", settings.primaryColor)
+  root.style.setProperty("--sidebar-ring", settings.primaryColor)
+
   // Font family
   root.style.setProperty("--active-font-family", `var(--font-${settings.fontFamily})`)
 
@@ -120,17 +127,13 @@ function applyCSSSettings(settings: AppSettings) {
   }
   root.style.setProperty("--base-font-size", fontSizeMap[settings.fontSize])
 
-  // Colors
-  root.style.setProperty("--custom-primary", settings.primaryColor)
-  root.style.setProperty("--custom-accent", settings.accentColor)
-
   // Spacing
   const spacingMap = {
-    "ultra-compact": "0.125rem",
-    compact: "0.25rem",
-    comfortable: "0.5rem",
+    "ultra-compact": "0.1875rem", // 3px - slightly more breathing room
+    compact: "0.25rem", // 4px
+    comfortable: "0.375rem", // reduced from 0.5rem (8px) to 0.375rem (6px) for better screen fit
   }
-  root.style.setProperty("--custom-spacing", spacingMap[settings.spacing])
+  root.style.setProperty("--spacing", spacingMap[settings.spacing])
 
   // Border radius
   const radiusMap = {
@@ -139,8 +142,10 @@ function applyCSSSettings(settings: AppSettings) {
     medium: "0.5rem",
     large: "1rem",
   }
-  root.style.setProperty("--custom-radius", radiusMap[settings.borderRadius])
+  root.style.setProperty("--radius", radiusMap[settings.borderRadius])
 
   // Sidebar position
   root.setAttribute("data-sidebar-position", settings.sidebarPosition)
+
+  console.log("[v0] Applied CSS settings - Primary:", settings.primaryColor, "Accent:", settings.accentColor)
 }
