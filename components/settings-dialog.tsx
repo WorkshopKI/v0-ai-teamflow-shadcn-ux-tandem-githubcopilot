@@ -52,7 +52,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-7xl h-[85vh] p-0 gap-0 overflow-hidden">
+      <DialogContent className="w-[90vw] max-w-[1400px] h-[85vh] p-0 gap-0 overflow-hidden">
         <DialogDescription className="sr-only">
           Customize your TeamFlow application appearance, typography, and layout settings
         </DialogDescription>
@@ -93,7 +93,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
 
             {/* Settings Content */}
             <div className="flex-1 overflow-y-auto px-8 py-6">
-              <div className="max-w-4xl space-y-8">
+              <div className="space-y-8">
                 {/* Appearance Section */}
                 {activeSection === "appearance" && (
                   <>
@@ -162,7 +162,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                         <Label className="text-base font-normal">Custom Colors</Label>
                         <p className="text-sm text-muted-foreground">Fine-tune your color palette</p>
                       </div>
-                      <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
                         <div className="space-y-2">
                           <Label htmlFor="primary-color" className="text-sm font-normal">
                             Primary Color
@@ -173,13 +173,13 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                               type="color"
                               value={pendingSettings.primaryColor}
                               onChange={(e) => updatePendingSettings({ primaryColor: e.target.value })}
-                              className="h-10 w-16 cursor-pointer p-1"
+                              className="h-10 w-16 cursor-pointer p-1 flex-shrink-0"
                             />
                             <Input
                               type="text"
                               value={pendingSettings.primaryColor}
                               onChange={(e) => updatePendingSettings({ primaryColor: e.target.value })}
-                              className="flex-1 font-mono text-sm"
+                              className="flex-1 font-mono text-sm min-w-[120px]"
                             />
                           </div>
                         </div>
@@ -193,13 +193,13 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                               type="color"
                               value={pendingSettings.accentColor}
                               onChange={(e) => updatePendingSettings({ accentColor: e.target.value })}
-                              className="h-10 w-16 cursor-pointer p-1"
+                              className="h-10 w-16 cursor-pointer p-1 flex-shrink-0"
                             />
                             <Input
                               type="text"
                               value={pendingSettings.accentColor}
                               onChange={(e) => updatePendingSettings({ accentColor: e.target.value })}
-                              className="flex-1 font-mono text-sm"
+                              className="flex-1 font-mono text-sm min-w-[120px]"
                             />
                           </div>
                         </div>
