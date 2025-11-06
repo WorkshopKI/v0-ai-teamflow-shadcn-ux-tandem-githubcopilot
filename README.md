@@ -1,4 +1,4 @@
-# TeamFlow - AI Collaborative Platform
+# TeamFlow - AI Collaborative App
 
 A local-first collaborative platform with AI agents, built with Next.js 16, React 19, and Tailwind CSS v4.
 
