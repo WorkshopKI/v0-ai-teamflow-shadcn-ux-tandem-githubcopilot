@@ -7,17 +7,11 @@ import { CheckSquare, Workflow, Bot, Users, Zap, ArrowRight } from "lucide-react
 
 export default function DashboardPage() {
   return (
-    <div className="flex flex-col gap-6 p-8 py-4">
+    <div className="flex flex-col gap-6 p-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Welcome back!</h1>
-          <p className="text-muted-foreground">Here's what's happening with your team today.</p>
-        </div>
-        <Button>
-          <Zap className="mr-2 h-4 w-4" />
-          Quick Start
-        </Button>
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold mb-2 text-balance">Welcome back!</h1>
+        <p className="text-muted-foreground text-lg">Here's what's happening with your team today.</p>
       </div>
 
       {/* Stats Grid */}

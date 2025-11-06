@@ -157,7 +157,7 @@ export function AppSidebar() {
         // Find the highest number suffix
         const numbers = existingTeamsWithSameName.map((team) => {
           const match = team.name.match(new RegExp(`^${baseName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s+(\\d+)$`))
-          return match ? Number.parseInt(match[1], 10) : 1
+          return match?.[1] ? Number.parseInt(match[1], 10) : 1
         })
         const maxNumber = Math.max(...numbers)
         uniqueName = `${baseName} ${maxNumber + 1}`

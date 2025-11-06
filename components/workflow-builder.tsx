@@ -224,13 +224,13 @@ export function WorkflowBuilder() {
   }
 
   const handleDuplicateWorkflow = (workflow: Workflow) => {
+    const { lastRun, ...workflowData } = workflow
     const duplicated: Workflow = {
-      ...workflow,
+      ...workflowData,
       id: Date.now().toString(),
       name: `${workflow.name} (Copy)`,
       status: "draft",
       runs: 0,
-      lastRun: undefined,
     }
     setWorkflows([...workflows, duplicated])
   }
@@ -240,7 +240,7 @@ export function WorkflowBuilder() {
       <div className="container mx-auto p-6 max-w-7xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 text-balance">Workflow Builder</h1>
+          <h1 className="text-2xl font-bold mb-2 text-balance">Workflow Builder</h1>
           <p className="text-muted-foreground text-lg">Create and manage automated workflows with visual builder</p>
         </div>
 

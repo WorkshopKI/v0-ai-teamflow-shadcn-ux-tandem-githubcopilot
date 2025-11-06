@@ -293,7 +293,7 @@ export function TemplatesLibrary() {
       <div className="container mx-auto p-6 max-w-7xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 text-balance">Templates Library</h1>
+          <h1 className="text-2xl font-bold mb-2 text-balance">Templates Library</h1>
           <p className="text-muted-foreground text-lg">Browse and use pre-built templates to get started quickly</p>
         </div>
 

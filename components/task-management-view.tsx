@@ -382,8 +382,8 @@ export function TaskManagementView() {
       description: newTask.description,
       status: newTask.status,
       priority: newTask.priority,
-      assignee: newTask.assignee || undefined,
-      dueDate: newTask.dueDate || undefined,
+      ...(newTask.assignee && { assignee: newTask.assignee }),
+      ...(newTask.dueDate && { dueDate: newTask.dueDate }),
       tags: newTask.tags
         .split(",")
         .map((t) => t.trim())
@@ -825,10 +825,10 @@ export function TaskManagementView() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto p-6 max-w-7xl py-px">
+      <div className="container mx-auto p-6 max-w-7xl">
         {/* Header */}
-        <div className="mb-5">
-          <h1 className="text-4xl font-bold mb-1 text-balance">Task Management</h1>
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold mb-2 text-balance">Task Management</h1>
           <p className="text-muted-foreground text-lg">Organize and track your team's work efficiently</p>
         </div>
 
@@ -1260,13 +1260,12 @@ export function TaskManagementView() {
                 </Card>
               ) : (
                 <div
-                  className={`grid gap-2 ${
-                    listColumns === 1
+                    className={`grid gap-2 ${listColumns === 1
                       ? "grid-cols-1"
                       : listColumns === 2
                         ? "grid-cols-1 lg:grid-cols-2"
                         : "grid-cols-1 lg:grid-cols-2 xl:grid-cols-3"
-                  }`}
+                      }`}
                 >
                   {filteredTasks.map((task) => (
                     <ListViewTaskCard key={task.id} task={task} />

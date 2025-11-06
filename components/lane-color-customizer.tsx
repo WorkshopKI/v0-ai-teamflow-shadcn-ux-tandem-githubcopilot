@@ -130,8 +130,8 @@ const quickColorPresets = {
   text: ["#3d4f5f", "#6b5842", "#3d5f4e"],
 }
 
-const defaultLightColors: ColorScheme = colorPresets[0].light
-const defaultDarkColors: ColorScheme = colorPresets[0].dark
+const defaultLightColors: ColorScheme = colorPresets[0]!.light
+const defaultDarkColors: ColorScheme = colorPresets[0]!.dark
 
 export function LaneColorCustomizer({ iconOnly = false }: { iconOnly?: boolean }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -207,12 +207,12 @@ export function LaneColorCustomizer({ iconOnly = false }: { iconOnly?: boolean }
 
     Object.entries(colors).forEach(([lane, laneColors]) => {
       const prefix = lane === "progress" ? "progress" : lane
-      Object.entries(laneColors).forEach(([property, value]) => {
+      Object.entries(laneColors as LaneColors).forEach(([property, value]) => {
         const varName = `--lane-${prefix}-${property}`
         if (isDark) {
-          root.style.setProperty(`${varName}-dark`, value)
+          root.style.setProperty(`${varName}-dark`, value as string)
         } else {
-          root.style.setProperty(varName, value)
+          root.style.setProperty(varName, value as string)
         }
       })
     })
@@ -220,17 +220,17 @@ export function LaneColorCustomizer({ iconOnly = false }: { iconOnly?: boolean }
     if (isDark && root.classList.contains("dark")) {
       Object.entries(colors).forEach(([lane, laneColors]) => {
         const prefix = lane === "progress" ? "progress" : lane
-        Object.entries(laneColors).forEach(([property, value]) => {
+        Object.entries(laneColors as LaneColors).forEach(([property, value]) => {
           const varName = `--lane-${prefix}-${property}`
-          root.style.setProperty(varName, value)
+          root.style.setProperty(varName, value as string)
         })
       })
     } else if (!isDark && !root.classList.contains("dark")) {
       Object.entries(colors).forEach(([lane, laneColors]) => {
         const prefix = lane === "progress" ? "progress" : lane
-        Object.entries(laneColors).forEach(([property, value]) => {
+        Object.entries(laneColors as LaneColors).forEach(([property, value]) => {
           const varName = `--lane-${prefix}-${property}`
-          root.style.setProperty(varName, value)
+          root.style.setProperty(varName, value as string)
         })
       })
     }

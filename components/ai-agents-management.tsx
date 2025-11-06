@@ -206,8 +206,9 @@ export function AIAgentsManagement() {
   }
 
   const handleDuplicateAgent = (agent: Agent) => {
+    const { lastActive, ...agentData } = agent
     const duplicated: Agent = {
-      ...agent,
+      ...agentData,
       id: Date.now().toString(),
       name: `${agent.name} (Copy)`,
       status: "paused",
@@ -215,7 +216,6 @@ export function AIAgentsManagement() {
       successRate: 0,
       avgResponseTime: 0,
       createdAt: new Date().toISOString(),
-      lastActive: undefined,
     }
     setAgents([...agents, duplicated])
   }
@@ -250,7 +250,7 @@ export function AIAgentsManagement() {
       <div className="container mx-auto p-6 max-w-7xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 text-balance">AI Agents</h1>
+          <h1 className="text-2xl font-bold mb-2 text-balance">AI Agents</h1>
           <p className="text-muted-foreground text-lg">Create and manage intelligent AI agents for automation</p>
         </div>
 
@@ -363,7 +363,7 @@ export function AIAgentsManagement() {
                       <Label>Temperature: {newAgent.temperature}</Label>
                       <Slider
                         value={[newAgent.temperature]}
-                        onValueChange={([value]) => setNewAgent({ ...newAgent, temperature: value })}
+                        onValueChange={([value]) => setNewAgent({ ...newAgent, temperature: value ?? 0.7 })}
                         min={0}
                         max={1}
                         step={0.1}
