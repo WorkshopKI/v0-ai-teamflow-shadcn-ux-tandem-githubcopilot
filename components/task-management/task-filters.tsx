@@ -19,6 +19,7 @@ export function TaskFilters({
   uniqueAssignees,
   onOpenTrash,
   trashCount,
+  newTaskButton,
 }: {
   searchQuery: string
   setSearchQuery: (v: string) => void
@@ -31,15 +32,20 @@ export function TaskFilters({
   uniqueAssignees: string[]
   onOpenTrash: () => void
   trashCount: number
+  newTaskButton?: React.ReactNode
 }) {
   return (
-    <div className="flex flex-col sm:flex-row gap-4 mb-4">
-      <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Search tasks..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-9" />
+    <div className="flex flex-col sm:flex-row gap-4 mb-4 items-center">
+      <div className="flex-1 flex items-center gap-2">
+        <div className="relative w-full">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input placeholder="Search tasks..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-9 w-full" />
+        </div>
+        {newTaskButton}
       </div>
-
-      <Select value={filterStatus} onValueChange={(value) => setFilterStatus(value as TaskStatus | "all")}>
+      {/* Toggle statistics button slot */}
+      {/* This will be injected from parent via newTaskButton or a new prop if needed */}
+      <Select value={filterStatus} onValueChange={(value) => setFilterStatus(value as TaskStatus | "all")}> 
         <SelectTrigger className="w-full sm:w-[180px]">
           <SelectValue placeholder="Filter by status" />
         </SelectTrigger>
@@ -51,12 +57,10 @@ export function TaskFilters({
           <SelectItem value="blocked">Blocked</SelectItem>
         </SelectContent>
       </Select>
-
       <Button variant="outline" className="w-full sm:w-auto bg-transparent" onClick={onOpenTrash}>
         <Trash2 className="h-4 w-4 mr-2" />
         Trash ({trashCount})
       </Button>
-
       <LaneColorCustomizer iconOnly />
     </div>
   )

@@ -57,42 +57,43 @@ export function TaskManagementView() {
           <p className="text-muted-foreground text-lg">Organize and track your team's work efficiently</p>
         </div>
 
-        <TaskFilters
-          searchQuery={state.searchQuery}
-          setSearchQuery={state.setSearchQuery}
-          filterStatus={state.filterStatus}
-          setFilterStatus={state.setFilterStatus}
-          filterPriority={state.filterPriority}
-          setFilterPriority={state.setFilterPriority}
-          filterAssignee={state.filterAssignee}
-          setFilterAssignee={state.setFilterAssignee}
-          uniqueAssignees={state.uniqueAssignees}
-          onOpenTrash={() => setIsTrashDialogOpen(true)}
-          trashCount={state.trashedTasks.length}
-        />
-
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <div className="flex items-center justify-between gap-2 mb-4">
-            <DialogTrigger asChild>
-              <Button className="w-full sm:w-auto">
-                <Plus className="h-4 w-4 mr-2" />
-                New Task
-              </Button>
-            </DialogTrigger>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowStats(!showStats)}
-              title={showStats ? "Hide statistics" : "Show statistics"}
-              className="h-9 w-9"
-            >
-              {showStats ? (
-                <ChevronUp className="h-4 w-4" />
-              ) : (
-                <ChevronDown className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
+          <TaskFilters
+            searchQuery={state.searchQuery}
+            setSearchQuery={state.setSearchQuery}
+            filterStatus={state.filterStatus}
+            setFilterStatus={state.setFilterStatus}
+            filterPriority={state.filterPriority}
+            setFilterPriority={state.setFilterPriority}
+            filterAssignee={state.filterAssignee}
+            setFilterAssignee={state.setFilterAssignee}
+            uniqueAssignees={state.uniqueAssignees}
+            onOpenTrash={() => setIsTrashDialogOpen(true)}
+            trashCount={state.trashedTasks.length}
+            newTaskButton={
+              <div className="flex items-center gap-2">
+                <DialogTrigger asChild>
+                  <Button className="w-full sm:w-auto">
+                    <Plus className="h-4 w-4 mr-2" />
+                    New Task
+                  </Button>
+                </DialogTrigger>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowStats(!showStats)}
+                  title={showStats ? "Hide statistics" : "Show statistics"}
+                  className="h-9 w-9"
+                >
+                  {showStats ? (
+                    <ChevronUp className="h-4 w-4" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            }
+          />
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
               <DialogTitle>Create New Task</DialogTitle>
