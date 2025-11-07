@@ -15,9 +15,16 @@ import {
   Activity,
   Copy,
   Edit,
+  Users,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import type { Agent, AgentStatus, AgentType } from "@/lib/types"
+import { mockAgents } from "@/lib/mock-data/agents"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { StatsGrid } from "@/components/stats-grid"
+import { StatsCard } from "@/components/stats-card"
+import { AgentForm } from "@/components/agents/agent-form"
+import { agentStatusConfig, getAgentTypeIcon } from "@/lib/config/agent"
 import {
   Dialog,
   DialogContent,
@@ -27,44 +34,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+// Removed inline form field components in favor of AgentForm abstraction
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Switch } from "@/components/ui/switch"
-import { Slider } from "@/components/ui/slider"
+// Removed Switch/Slider imports (handled inside AgentForm)
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
-type AgentStatus = "active" | "paused" | "training" | "error"
-type AgentType = "conversational" | "analytical" | "creative" | "task-automation"
 
-interface Agent {
-  id: string
-  name: string
-  description: string
-  type: AgentType
-  status: AgentStatus
-  model: string
-  temperature: number
-  maxTokens: number
-  systemPrompt: string
-  tools: string[]
-  interactions: number
-  successRate: number
-  avgResponseTime: number
-  createdAt: string
-  lastActive?: string
-}
-
-const agentTypes = [
-  { value: "conversational", label: "Conversational", icon: MessageSquare, description: "Chat and customer support" },
-  { value: "analytical", label: "Analytical", icon: Brain, description: "Data analysis and insights" },
-  { value: "creative", label: "Creative", icon: Zap, description: "Content generation" },
-  { value: "task-automation", label: "Task Automation", icon: Activity, description: "Workflow automation" },
-]
+// Agent type config now centralized in lib/config/agent
 
 const availableModels = [
   { value: "gpt-4", label: "GPT-4" },
@@ -83,105 +61,15 @@ const availableTools = [
   "calendar_management",
 ]
 
-const mockAgents: Agent[] = [
-  {
-    id: "1",
-    name: "Customer Support Bot",
-    description: "Handles customer inquiries and support tickets",
-    type: "conversational",
-    status: "active",
-    model: "gpt-4-turbo",
-    temperature: 0.7,
-    maxTokens: 2000,
-    systemPrompt:
-      "You are a helpful customer support agent. Be friendly, professional, and solve customer issues efficiently.",
-    tools: ["web_search", "email_sending"],
-    interactions: 15234,
-    successRate: 94.5,
-    avgResponseTime: 1.2,
-    createdAt: "2025-01-15",
-    lastActive: "2025-02-02T14:30:00",
-  },
-  {
-    id: "2",
-    name: "Data Analyst",
-    description: "Analyzes business data and generates insights",
-    type: "analytical",
-    status: "active",
-    model: "gpt-4",
-    temperature: 0.3,
-    maxTokens: 4000,
-    systemPrompt: "You are a data analyst. Provide clear, actionable insights from data.",
-    tools: ["data_analysis", "code_execution"],
-    interactions: 3421,
-    successRate: 97.2,
-    avgResponseTime: 2.8,
-    createdAt: "2025-01-20",
-    lastActive: "2025-02-02T12:15:00",
-  },
-  {
-    id: "3",
-    name: "Content Creator",
-    description: "Generates marketing content and social media posts",
-    type: "creative",
-    status: "paused",
-    model: "claude-3-opus",
-    temperature: 0.9,
-    maxTokens: 3000,
-    systemPrompt: "You are a creative content writer. Generate engaging, original content.",
-    tools: ["image_generation", "web_search"],
-    interactions: 892,
-    successRate: 91.8,
-    avgResponseTime: 3.5,
-    createdAt: "2025-01-25",
-    lastActive: "2025-02-01T09:00:00",
-  },
-]
+// Using centralized mock data and types from lib
 
 export function AIAgentsManagement() {
   const [agents, setAgents] = useState<Agent[]>(mockAgents)
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-  const [newAgent, setNewAgent] = useState({
-    name: "",
-    description: "",
-    type: "conversational" as AgentType,
-    model: "gpt-4-turbo",
-    temperature: 0.7,
-    maxTokens: 2000,
-    systemPrompt: "",
-    tools: [] as string[],
-  })
 
-  const handleCreateAgent = () => {
-    const agent: Agent = {
-      id: Date.now().toString(),
-      name: newAgent.name,
-      description: newAgent.description,
-      type: newAgent.type,
-      status: "paused",
-      model: newAgent.model,
-      temperature: newAgent.temperature,
-      maxTokens: newAgent.maxTokens,
-      systemPrompt: newAgent.systemPrompt,
-      tools: newAgent.tools,
-      interactions: 0,
-      successRate: 0,
-      avgResponseTime: 0,
-      createdAt: new Date().toISOString(),
-    }
-    setAgents([...agents, agent])
-    setIsCreateDialogOpen(false)
-    setNewAgent({
-      name: "",
-      description: "",
-      type: "conversational",
-      model: "gpt-4-turbo",
-      temperature: 0.7,
-      maxTokens: 2000,
-      systemPrompt: "",
-      tools: [],
-    })
+  const handleCreateAgent = (agent: Agent) => {
+    setAgents((prev) => [...prev, agent])
   }
 
   const handleToggleStatus = (agentId: string) => {
@@ -220,30 +108,20 @@ export function AIAgentsManagement() {
     setAgents([...agents, duplicated])
   }
 
-  const toggleTool = (tool: string) => {
-    setNewAgent({
-      ...newAgent,
-      tools: newAgent.tools.includes(tool) ? newAgent.tools.filter((t) => t !== tool) : [...newAgent.tools, tool],
-    })
-  }
+  // Tool toggling handled internally by AgentForm
 
-  const getStatusColor = (status: AgentStatus) => {
-    switch (status) {
-      case "active":
-        return "bg-green-500"
-      case "paused":
-        return "bg-gray-500"
-      case "training":
-        return "bg-blue-500"
-      case "error":
-        return "bg-red-500"
-    }
-  }
+  const getStatusColor = (status: AgentStatus) => agentStatusConfig[status].dotClass
+  const getTypeIcon = (type: AgentType) => getAgentTypeIcon(type)
 
-  const getTypeIcon = (type: AgentType) => {
-    const typeConfig = agentTypes.find((t) => t.value === type)
-    return typeConfig?.icon || Bot
-  }
+  // Aggregated metrics for stats cards
+  const totalAgents = agents.length
+  const activeAgents = agents.filter((a) => a.status === "active").length
+  const totalInteractions = agents.reduce((sum, a) => sum + a.interactions, 0)
+  const avgSuccess = totalAgents ? agents.reduce((sum, a) => sum + a.successRate, 0) / totalAgents : 0
+
+  // Placeholder trend data (in a real app derive from time-series)
+  const successTrend = "+3.2%"
+  const interactionTrend = "+5% week"
 
   return (
     <div className="min-h-screen bg-background">
@@ -254,37 +132,37 @@ export function AIAgentsManagement() {
           <p className="text-muted-foreground text-lg">Create and manage intelligent AI agents for automation</p>
         </div>
 
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Total Agents</CardDescription>
-              <CardTitle className="text-3xl">{agents.length}</CardTitle>
-            </CardHeader>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Active Agents</CardDescription>
-              <CardTitle className="text-3xl">{agents.filter((a) => a.status === "active").length}</CardTitle>
-            </CardHeader>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Total Interactions</CardDescription>
-              <CardTitle className="text-3xl">
-                {agents.reduce((sum, a) => sum + a.interactions, 0).toLocaleString()}
-              </CardTitle>
-            </CardHeader>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Avg Success Rate</CardDescription>
-              <CardTitle className="text-3xl">
-                {(agents.reduce((sum, a) => sum + a.successRate, 0) / agents.length).toFixed(1)}%
-              </CardTitle>
-            </CardHeader>
-          </Card>
-        </div>
+        {/* Stats Overview (Dashboard style) */}
+        <StatsGrid className="mb-6">
+          <StatsCard
+            title="Total Agents"
+            icon={Bot}
+            value={totalAgents}
+            highlight={`${activeAgents} online`}
+            subtext="right now"
+          />
+          <StatsCard
+            title="Active Agents"
+            icon={Users}
+            value={activeAgents}
+            highlight={`${Math.round((activeAgents / Math.max(1, totalAgents)) * 100)}%`}
+            subtext="of all agents"
+          />
+            <StatsCard
+              title="Total Interactions"
+              icon={Activity}
+              value={totalInteractions.toLocaleString()}
+              highlight={interactionTrend}
+              subtext="vs last week"
+            />
+            <StatsCard
+              title="Avg Success Rate"
+              icon={TrendingUp}
+              value={`${avgSuccess.toFixed(1)}%`}
+              highlight={successTrend}
+              subtext="performance delta"
+            />
+        </StatsGrid>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Agents List */}
@@ -303,113 +181,16 @@ export function AIAgentsManagement() {
                     <DialogTitle>Create New AI Agent</DialogTitle>
                     <DialogDescription>Configure your AI agent with custom settings and capabilities</DialogDescription>
                   </DialogHeader>
-                  <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="agent-name">Agent Name</Label>
-                      <Input
-                        id="agent-name"
-                        placeholder="e.g., Customer Support Bot"
-                        value={newAgent.name}
-                        onChange={(e) => setNewAgent({ ...newAgent, name: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="agent-description">Description</Label>
-                      <Textarea
-                        id="agent-description"
-                        placeholder="Describe what this agent does"
-                        value={newAgent.description}
-                        onChange={(e) => setNewAgent({ ...newAgent, description: e.target.value })}
-                        rows={2}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Agent Type</Label>
-                      <Select
-                        value={newAgent.type}
-                        onValueChange={(value) => setNewAgent({ ...newAgent, type: value as AgentType })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {agentTypes.map((type) => (
-                            <SelectItem key={type.value} value={type.value}>
-                              {type.label} - {type.description}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>AI Model</Label>
-                      <Select
-                        value={newAgent.model}
-                        onValueChange={(value) => setNewAgent({ ...newAgent, model: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {availableModels.map((model) => (
-                            <SelectItem key={model.value} value={model.value}>
-                              {model.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Temperature: {newAgent.temperature}</Label>
-                      <Slider
-                        value={[newAgent.temperature]}
-                        onValueChange={([value]) => setNewAgent({ ...newAgent, temperature: value ?? 0.7 })}
-                        min={0}
-                        max={1}
-                        step={0.1}
-                      />
-                      <p className="text-xs text-muted-foreground">Lower = more focused, Higher = more creative</p>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="max-tokens">Max Tokens</Label>
-                      <Input
-                        id="max-tokens"
-                        type="number"
-                        value={newAgent.maxTokens}
-                        onChange={(e) => setNewAgent({ ...newAgent, maxTokens: Number.parseInt(e.target.value) })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="system-prompt">System Prompt</Label>
-                      <Textarea
-                        id="system-prompt"
-                        placeholder="Define the agent's behavior and personality"
-                        value={newAgent.systemPrompt}
-                        onChange={(e) => setNewAgent({ ...newAgent, systemPrompt: e.target.value })}
-                        rows={4}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Tools & Capabilities</Label>
-                      <div className="grid grid-cols-2 gap-2">
-                        {availableTools.map((tool) => (
-                          <div key={tool} className="flex items-center space-x-2">
-                            <Switch checked={newAgent.tools.includes(tool)} onCheckedChange={() => toggleTool(tool)} />
-                            <Label className="text-sm cursor-pointer" onClick={() => toggleTool(tool)}>
-                              {tool.replace("_", " ")}
-                            </Label>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                  <AgentForm
+                    onCreate={(agent) => {
+                      handleCreateAgent(agent)
+                      setIsCreateDialogOpen(false)
+                    }}
+                    availableModels={availableModels}
+                    availableTools={availableTools}
+                  />
                   <DialogFooter>
-                    <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                      Cancel
-                    </Button>
-                    <Button onClick={handleCreateAgent} disabled={!newAgent.name || !newAgent.systemPrompt}>
-                      Create Agent
-                    </Button>
+                    <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>Cancel</Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>

@@ -17,6 +17,7 @@ import {
   X,
 } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { storage, STORAGE_KEYS } from "@/lib/storage"
 import { Button } from "@/components/ui/button"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import {
@@ -127,18 +128,15 @@ export function AppSidebar() {
   }, [activeTeamId])
 
   useEffect(() => {
-    const savedWidth = localStorage.getItem("sidebarWidth")
-    if (savedWidth) {
-      const width = Number.parseInt(savedWidth, 10)
-      if (width >= 200 && width <= 400) {
-        setSidebarWidth(width)
-      }
+    const savedWidth = storage.get(STORAGE_KEYS.SIDEBAR_WIDTH, null) as number | null
+    if (typeof savedWidth === "number" && savedWidth >= 200 && savedWidth <= 400) {
+      setSidebarWidth(savedWidth)
     }
   }, [])
 
   useEffect(() => {
     if (!isCollapsed) {
-      localStorage.setItem("sidebarWidth", sidebarWidth.toString())
+      storage.set(STORAGE_KEYS.SIDEBAR_WIDTH, sidebarWidth)
     }
   }, [sidebarWidth, isCollapsed])
 

@@ -19,6 +19,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { StatsGrid } from "@/components/stats-grid"
+import { StatsCard } from "@/components/stats-card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Dialog,
@@ -219,6 +221,16 @@ export function TemplatesLibrary() {
     task: filteredTemplates.filter((t) => t.category === "task"),
   }
 
+  // Aggregated metrics for stats cards (based on unfiltered templates for overall totals)
+  const totalTemplates = templates.length
+  const workflowCount = templates.filter((t) => t.category === "workflow").length
+  const agentCount = templates.filter((t) => t.category === "agent").length
+  const taskCount = templates.filter((t) => t.category === "task").length
+  const totalUses = templates.reduce((sum, t) => sum + t.downloads, 0)
+  const avgRating = templates.length ? (templates.reduce((s, t) => s + t.rating, 0) / templates.length).toFixed(1) : "0.0"
+  const usageTrend = "+4%"
+  const ratingTrend = "+0.2"
+
   const handleUseTemplate = (template: Template) => {
     // In a real app, this would create a new workflow/agent/task from the template
     console.log("Using template:", template)
@@ -297,33 +309,35 @@ export function TemplatesLibrary() {
           <p className="text-muted-foreground text-lg">Browse and use pre-built templates to get started quickly</p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Total Templates</CardDescription>
-              <CardTitle className="text-3xl">{templates.length}</CardTitle>
-            </CardHeader>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Workflows</CardDescription>
-              <CardTitle className="text-3xl">{templates.filter((t) => t.category === "workflow").length}</CardTitle>
-            </CardHeader>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>AI Agents</CardDescription>
-              <CardTitle className="text-3xl">{templates.filter((t) => t.category === "agent").length}</CardTitle>
-            </CardHeader>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Task Templates</CardDescription>
-              <CardTitle className="text-3xl">{templates.filter((t) => t.category === "task").length}</CardTitle>
-            </CardHeader>
-          </Card>
-        </div>
+        {/* Stats (Dashboard style) */}
+        <StatsGrid className="mb-6">
+          <StatsCard
+            title="Total Templates"
+            icon={Copy}
+            value={totalTemplates}
+            highlight={usageTrend}
+            subtext={`${totalUses.toLocaleString()} uses`}
+          />
+          <StatsCard
+            title="Workflows"
+            icon={GitBranch}
+            value={workflowCount}
+            subtext="workflow templates"
+          />
+          <StatsCard
+            title="AI Agents"
+            icon={Bot}
+            value={agentCount}
+            subtext="agent templates"
+          />
+          <StatsCard
+            title="Task Templates"
+            icon={CheckSquare}
+            value={taskCount}
+            highlight={ratingTrend}
+            subtext={`avg rating ${avgRating}`}
+          />
+        </StatsGrid>
 
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">

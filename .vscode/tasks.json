@@ -1,0 +1,45 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Dev: pnpm",
+      "type": "shell",
+      "command": "pnpm",
+      "args": ["dev"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Dev: pnpm (inspect)",
+      "type": "shell",
+      "command": "pnpm",
+      "args": ["dev"],
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "NODE_OPTIONS": "--inspect=9229"
+        }
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Open: Tasks Page",
+      "type": "shell",
+      "command": "xdg-open",
+      "args": ["http://localhost:3000/tasks"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Dev + Open Tasks",
+      "dependsOn": [
+        "Dev: pnpm",
+        "Open: Tasks Page"
+      ],
+      "dependsOrder": "parallel"
+    }
+  ]
+}
