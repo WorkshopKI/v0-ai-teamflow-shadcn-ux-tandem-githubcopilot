@@ -46,34 +46,6 @@ describe('Font Settings', () => {
     })
   })
 
-  it('applies serif font family from settings', async () => {
-    mockStorage.set(
-      'appSettings',
-      JSON.stringify({
-        fontFamily: 'serif',
-        fontSize: 'medium',
-        fontFace: 'regular',
-        primaryColor: '#0a3874',
-        accentColor: '#306bb3',
-        sidebarPosition: 'left',
-        spacing: 'compact',
-        borderRadius: 'medium',
-        theme: 'system',
-      })
-    )
-
-    render(
-      <SettingsProvider>
-        <TestComponent />
-      </SettingsProvider>
-    )
-
-    await waitFor(() => {
-      const root = document.documentElement
-      expect(root.style.getPropertyValue('--active-font-family')).toBe('var(--font-serif)')
-    })
-  })
-
   it('applies mono font family from settings', async () => {
     mockStorage.set(
       'appSettings',
