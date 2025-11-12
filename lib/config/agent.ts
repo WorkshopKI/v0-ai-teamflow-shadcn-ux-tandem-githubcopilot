@@ -1,7 +1,7 @@
-import { Bot, MessageSquare, Brain, Zap, Activity } from "lucide-react"
+import { Bot, MessageSquare, Brain, Zap, Activity, type LucideIcon } from "lucide-react"
 import type { AgentType, AgentStatus } from "@/lib/types/agent"
 
-export const agentTypeConfig: Record<AgentType, { label: string; icon: any; description: string }> = {
+export const agentTypeConfig: Record<AgentType, { label: string; icon: LucideIcon; description: string }> = {
   conversational: {
     label: "Conversational",
     icon: MessageSquare,

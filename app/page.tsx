@@ -1,9 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import Link from "next/link"
-import { CheckSquare, Workflow, Bot, Users, Zap, ArrowRight } from "lucide-react"
+import { CheckSquare, Workflow, Bot, Users, ArrowRight } from "lucide-react"
 
 export default function DashboardPage() {
   return (
@@ -18,52 +17,52 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Tasks</CardTitle>
+            <CardTitle className="text-sm">Active Tasks</CardTitle>
             <CheckSquare className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">24</div>
             <p className="text-xs text-muted-foreground">
-              <span className="text-primary font-medium">+12%</span> from last week
+              <span className="text-primary font-dynamic">+12%</span> from last week
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Workflows</CardTitle>
+            <CardTitle className="text-sm">Workflows</CardTitle>
             <Workflow className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">8</div>
             <p className="text-xs text-muted-foreground">
-              <span className="text-primary font-medium">3 active</span> automations
+              <span className="text-primary font-dynamic">3 active</span> automations
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">AI Agents</CardTitle>
+            <CardTitle className="text-sm">AI Agents</CardTitle>
             <Bot className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">5</div>
             <p className="text-xs text-muted-foreground">
-              <span className="text-primary font-medium">4 online</span> right now
+              <span className="text-primary font-dynamic">4 online</span> right now
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Team Members</CardTitle>
+            <CardTitle className="text-sm">Team Members</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">12</div>
             <p className="text-xs text-muted-foreground">
-              <span className="text-primary font-medium">8 active</span> today
+              <span className="text-primary font-dynamic">8 active</span> today
             </p>
           </CardContent>
         </Card>
@@ -83,7 +82,7 @@ export default function DashboardPage() {
                 <Bot className="h-4 w-4 text-primary" />
               </div>
               <div className="flex-1 space-y-1">
-                <p className="text-sm font-medium">Code Review Agent completed review</p>
+                <p className="text-sm font-dynamic">Code Review Agent completed review</p>
                 <p className="text-xs text-muted-foreground">Reviewed PR #234 and suggested 3 improvements</p>
                 <p className="text-xs text-muted-foreground">2 minutes ago</p>
               </div>
@@ -94,7 +93,7 @@ export default function DashboardPage() {
                 <CheckSquare className="h-4 w-4 text-chart-2" />
               </div>
               <div className="flex-1 space-y-1">
-                <p className="text-sm font-medium">Sarah completed "API Integration"</p>
+                <p className="text-sm font-dynamic">Sarah completed "API Integration"</p>
                 <p className="text-xs text-muted-foreground">Task moved to Done</p>
                 <p className="text-xs text-muted-foreground">15 minutes ago</p>
               </div>
@@ -105,7 +104,7 @@ export default function DashboardPage() {
                 <Workflow className="h-4 w-4 text-chart-3" />
               </div>
               <div className="flex-1 space-y-1">
-                <p className="text-sm font-medium">Workflow "Daily Standup" executed</p>
+                <p className="text-sm font-dynamic">Workflow "Daily Standup" executed</p>
                 <p className="text-xs text-muted-foreground">Sent summary to #general channel</p>
                 <p className="text-xs text-muted-foreground">1 hour ago</p>
               </div>
@@ -116,7 +115,7 @@ export default function DashboardPage() {
                 <Users className="h-4 w-4 text-chart-4" />
               </div>
               <div className="flex-1 space-y-1">
-                <p className="text-sm font-medium">Mike joined the team</p>
+                <p className="text-sm font-dynamic">Mike joined the team</p>
                 <p className="text-xs text-muted-foreground">Added to Development team</p>
                 <p className="text-xs text-muted-foreground">3 hours ago</p>
               </div>
@@ -135,7 +134,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary">Development</Badge>
-                  <span className="text-sm font-medium">Code Review Pipeline</span>
+                    <span className="text-sm font-dynamic">Code Review Pipeline</span>
                 </div>
                 <Badge className="bg-primary text-primary-foreground">Active</Badge>
               </div>
@@ -147,7 +146,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary">Marketing</Badge>
-                  <span className="text-sm font-medium">Content Distribution</span>
+                    <span className="text-sm font-dynamic">Content Distribution</span>
                 </div>
                 <Badge className="bg-primary text-primary-foreground">Active</Badge>
               </div>
@@ -159,7 +158,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary">Research</Badge>
-                  <span className="text-sm font-medium">Data Analysis</span>
+                    <span className="text-sm font-dynamic">Data Analysis</span>
                 </div>
                 <Badge className="bg-primary text-primary-foreground">Active</Badge>
               </div>

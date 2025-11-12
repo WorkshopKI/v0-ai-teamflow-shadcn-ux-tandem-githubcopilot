@@ -8,8 +8,6 @@ import {
   Trash2,
   Play,
   Pause,
-  MessageSquare,
-  Brain,
   Zap,
   TrendingUp,
   Activity,
@@ -94,6 +92,7 @@ export function AIAgentsManagement() {
   }
 
   const handleDuplicateAgent = (agent: Agent) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { lastActive, ...agentData } = agent
     const duplicated: Agent = {
       ...agentData,

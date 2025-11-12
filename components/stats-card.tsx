@@ -17,7 +17,7 @@ export function StatsCard({ title, value, icon: Icon, subtext, highlight, classN
   return (
     <Card className={className}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <CardTitle className="text-sm">{title}</CardTitle>
         <Icon className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
@@ -31,7 +31,7 @@ export function StatsCard({ title, value, icon: Icon, subtext, highlight, classN
             <div className="text-2xl font-bold">{value}</div>
             {(subtext || highlight) && (
               <p className="text-xs text-muted-foreground">
-                {highlight ? <span className="text-primary font-medium">{highlight}</span> : null}
+                {highlight ? <span className="text-primary font-dynamic">{highlight}</span> : null}
                 {subtext ? (highlight ? ` ${subtext}` : subtext) : null}
               </p>
             )}

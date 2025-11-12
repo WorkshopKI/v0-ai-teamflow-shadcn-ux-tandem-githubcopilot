@@ -36,9 +36,6 @@
   --sidebar-accent-foreground: #0d111c;
   --sidebar-border: #d9e2ed;
   --sidebar-ring: #0a3874;
-  --font-sans: "Inter var", sans-serif;
-  --font-serif: "Lora", serif;
-  --font-mono: "JetBrains Mono", monospace;
   --radius: 0.5rem;
   --shadow-x: 0px;
   --shadow-y: 4px;
@@ -60,6 +57,7 @@
     hsl(213.9623 84.1270% 24.7059% / 0.08);
   --shadow-2xl: 0px 4px 16px -4px hsl(213.9623 84.1270% 24.7059% / 0.2);
   --tracking-normal: -0.01em;
+  --active-font-weight: 400;
   --spacing: 0.25rem;
 }
 
@@ -97,9 +95,6 @@
   --sidebar-accent-foreground: #e6ebf0;
   --sidebar-border: #1f2937;
   --sidebar-ring: #306bb3;
-  --font-sans: "Inter var", sans-serif;
-  --font-serif: "Lora", serif;
-  --font-mono: "JetBrains Mono", monospace;
   --radius: 0.5rem;
   --shadow-x: 0px;
   --shadow-y: 4px;
@@ -115,6 +110,7 @@
   --shadow-lg: 0px 4px 16px -4px hsl(224 36.5854% 8.0392% / 0.4), 0px 4px 6px -5px hsl(224 36.5854% 8.0392% / 0.4);
   --shadow-xl: 0px 4px 16px -4px hsl(224 36.5854% 8.0392% / 0.4), 0px 8px 10px -5px hsl(224 36.5854% 8.0392% / 0.4);
   --shadow-2xl: 0px 4px 16px -4px hsl(224 36.5854% 8.0392% / 1.0);
+  --active-font-weight: 400;
 }
 
 @theme inline {
@@ -161,9 +157,16 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    font-size: var(--base-font-size, 16px) !important;
+  }
   body {
     @apply bg-background text-foreground;
     letter-spacing: var(--tracking-normal);
+    /* Apply dynamic font family and size from settings */
+    font-family: var(--active-font-family, var(--font-sans)) !important;
+    font-size: var(--base-font-size, 16px) !important;
+    font-weight: var(--active-font-weight, 400) !important;
   }
 
   /* Add smooth transitions for theme changes */
@@ -178,11 +181,6 @@
   /* Prevent transitions on page load */
   .no-transition * {
     transition: none !important;
-  }
-
-  /* Add sidebar position support - reverses layout when sidebar is on right */
-  [data-sidebar-position="right"] .flex.h-screen {
-    flex-direction: row-reverse;
   }
 
   /* Refined Kanban lane colors with muted, softer tones for reduced visual intensity */
@@ -244,5 +242,11 @@
     --lane-blocked-accent: #d49aa5;
     --lane-blocked-header: #1f1216;
     --lane-blocked-text: #e8d5d9;
+  }
+}
+
+@layer utilities {
+  .font-dynamic {
+    font-weight: var(--active-font-weight, 400);
   }
 }

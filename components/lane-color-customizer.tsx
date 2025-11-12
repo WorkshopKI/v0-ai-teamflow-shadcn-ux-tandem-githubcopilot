@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input"
 import { useState, useEffect } from "react"
 import { Palette, RotateCcw, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { storage, STORAGE_KEYS } from "@/lib/storage"
 import {
   Dialog,
   DialogContent,
@@ -149,7 +150,7 @@ export function LaneColorCustomizer({ iconOnly = false }: { iconOnly?: boolean }
       return theme
     }
 
-    const initialTheme = detectTheme()
+    detectTheme()
 
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
@@ -181,11 +182,11 @@ export function LaneColorCustomizer({ iconOnly = false }: { iconOnly?: boolean }
   }, [darkColors, lightColors])
 
   useEffect(() => {
-    const savedLightColors = localStorage.getItem("kanban-light-colors")
-    const savedDarkColors = localStorage.getItem("kanban-dark-colors")
+    const savedLightColors = storage.get(STORAGE_KEYS.KANBAN_LIGHT_COLORS, null)
+    const savedDarkColors = storage.get(STORAGE_KEYS.KANBAN_DARK_COLORS, null)
 
     if (savedLightColors) {
-      const parsed = JSON.parse(savedLightColors)
+      const parsed = typeof savedLightColors === "string" ? JSON.parse(savedLightColors) : savedLightColors
       setLightColors(parsed)
       if (currentTheme === "light") {
         applyColors(parsed, "light")
@@ -193,7 +194,7 @@ export function LaneColorCustomizer({ iconOnly = false }: { iconOnly?: boolean }
     }
 
     if (savedDarkColors) {
-      const parsed = JSON.parse(savedDarkColors)
+      const parsed = typeof savedDarkColors === "string" ? JSON.parse(savedDarkColors) : savedDarkColors
       setDarkColors(parsed)
       if (currentTheme === "dark") {
         applyColors(parsed, "dark")
@@ -262,8 +263,8 @@ export function LaneColorCustomizer({ iconOnly = false }: { iconOnly?: boolean }
   }
 
   const handleSave = () => {
-    localStorage.setItem("kanban-light-colors", JSON.stringify(lightColors))
-    localStorage.setItem("kanban-dark-colors", JSON.stringify(darkColors))
+    storage.set("kanban-light-colors", lightColors)
+    storage.set("kanban-dark-colors", darkColors)
     setIsOpen(false)
   }
 
@@ -273,7 +274,7 @@ export function LaneColorCustomizer({ iconOnly = false }: { iconOnly?: boolean }
 
     setColors(defaults)
     applyColors(defaults, activeTab)
-    localStorage.removeItem(`kanban-${activeTab}-colors`)
+    storage.remove(`kanban-${activeTab}-colors`)
   }
 
   const ColorPicker = ({
@@ -288,7 +289,7 @@ export function LaneColorCustomizer({ iconOnly = false }: { iconOnly?: boolean }
     presets?: string[]
   }) => (
     <div className="space-y-1.5">
-      <Label className="text-xs font-medium text-muted-foreground">{label}</Label>
+      <Label className="text-xs font-dynamic text-muted-foreground">{label}</Label>
       <div className="flex items-center gap-2">
         <input
           type="color"

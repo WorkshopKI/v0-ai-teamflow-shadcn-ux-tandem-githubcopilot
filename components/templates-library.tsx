@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, type ComponentType } from "react"
 import {
   Search,
   Filter,
@@ -41,13 +41,13 @@ interface Template {
   description: string
   category: Exclude<TemplateCategory, "all">
   difficulty: TemplateDifficulty
-  icon: any
+  icon: ComponentType<{ className?: string }>
   tags: string[]
   rating: number
   downloads: number
   author: string
   preview: string
-  config: Record<string, any>
+  config: Record<string, unknown>
 }
 
 const templates: Template[] = [
@@ -249,7 +249,7 @@ export function TemplatesLibrary() {
             </div>
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
               <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-              <span className="font-medium">{template.rating}</span>
+                <span className="font-dynamic">{template.rating}</span>
             </div>
           </div>
           <CardTitle className="text-base font-semibold line-clamp-1">{template.name}</CardTitle>

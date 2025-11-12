@@ -38,12 +38,14 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 
 type NodeType = "trigger" | "action" | "condition" | "delay"
 
+import type { ComponentType } from "react"
+
 interface WorkflowNode {
   id: string
   type: NodeType
   label: string
-  icon: any
-  config: Record<string, any>
+  icon: ComponentType<{ className?: string }>
+  config: Record<string, unknown>
   position: { x: number; y: number }
 }
 
@@ -224,6 +226,7 @@ export function WorkflowBuilder() {
   }
 
   const handleDuplicateWorkflow = (workflow: Workflow) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { lastRun, ...workflowData } = workflow
     const duplicated: Workflow = {
       ...workflowData,

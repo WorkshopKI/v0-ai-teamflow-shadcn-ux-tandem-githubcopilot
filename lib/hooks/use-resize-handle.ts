@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
+import { storage } from "@/lib/storage"
 
 /**
  * Clamp a number between min and max values
@@ -16,12 +17,12 @@ function clamp(value: number, min: number, max: number): number {
  * @param initialSize - Initial size in pixels
  * @param minSize - Minimum allowed size
  * @param maxSize - Maximum allowed size
- * @param storageKey - Optional localStorage key to persist size
+ * @param storageKey - Optional storage key to persist size (via storage abstraction)
  * @returns Size state and resize controls
  *
  * @example
  * ```tsx
- * const { size, isResizing, startResize } = useResizeHandle(256, 200, 400)
+ * const { size, isResizing, startResize } = useResizeHandle(256, 200, 400, "sidebar-width")
  * return (
  *   <div style={{ width: size }}>
  *     <div onMouseDown={startResize} />
@@ -38,20 +39,17 @@ export function useResizeHandle(initialSize: number, minSize: number, maxSize: n
   // Load from storage on mount
   useEffect(() => {
     if (storageKey) {
-      const saved = localStorage.getItem(storageKey)
-      if (saved) {
-        const parsed = Number.parseInt(saved, 10)
-        if (!Number.isNaN(parsed) && parsed >= minSize && parsed <= maxSize) {
-          setSize(parsed)
-        }
+      const saved = storage.get<number>(storageKey, initialSize)
+      if (saved >= minSize && saved <= maxSize) {
+        setSize(saved)
       }
     }
-  }, [storageKey, minSize, maxSize])
+  }, [storageKey, minSize, maxSize, initialSize])
 
   // Save to storage when size changes
   useEffect(() => {
     if (storageKey && !isResizing) {
-      localStorage.setItem(storageKey, size.toString())
+      storage.set(storageKey, size)
     }
   }, [size, storageKey, isResizing])
 
@@ -84,7 +82,7 @@ export function useResizeHandle(initialSize: number, minSize: number, maxSize: n
     }
   }, [isResizing, startPosition, startSize, minSize, maxSize])
 
-  const startResize = useCallback((e: any) => {
+  const startResize = useCallback((e: React.MouseEvent) => {
     e.preventDefault()
     setIsResizing(true)
     setStartPosition(e.clientX)

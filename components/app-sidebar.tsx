@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import {
   Settings,
@@ -18,6 +18,7 @@ import {
 } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { storage, STORAGE_KEYS } from "@/lib/storage"
+import { useFeatures } from "@/lib/features"
 import { Button } from "@/components/ui/button"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import {
@@ -30,7 +31,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { SettingsOverlay } from "@/components/settings-overlay"
-import { teamTemplates, teamNavigation } from "@/data/templates" // Import teamTemplates and teamNavigation
+import { teamTemplates } from "@/data/templates"
 
 interface Team {
   id: string
@@ -38,8 +39,14 @@ interface Team {
   template: string
 }
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  position?: "left" | "right"
+}
+
+export function AppSidebar({ position = "left" }: AppSidebarProps) {
   const pathname = usePathname()
+  const router = useRouter()
+  const { enabledFeatures } = useFeatures()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isTeamExpanded, setIsTeamExpanded] = useState(true)
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false)
@@ -56,15 +63,20 @@ export function AppSidebar() {
 
   const [expandedTeams, setExpandedTeams] = useState<Set<string>>(new Set(["default"]))
 
-  const activeTeam = teams.find((team) => team.id === activeTeamId)
-
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!isResizing) return
 
-      const newWidth = e.clientX
       const minWidth = 200
       const maxWidth = 400
+      let newWidth: number
+
+      if (position === "left") {
+        newWidth = e.clientX
+      } else {
+        // For right sidebar, calculate from right edge
+        newWidth = window.innerWidth - e.clientX
+      }
 
       if (newWidth >= minWidth && newWidth <= maxWidth) {
         setSidebarWidth(newWidth)
@@ -88,28 +100,28 @@ export function AppSidebar() {
       document.body.style.cursor = ""
       document.body.style.userSelect = ""
     }
-  }, [isResizing])
+  }, [isResizing, position])
 
   useEffect(() => {
-    const savedTeams = localStorage.getItem("teams")
-    const savedActiveTeamId = localStorage.getItem("activeTeamId")
+    const savedTeams = storage.get(STORAGE_KEYS.TEAMS, null)
+    const savedActiveTeamId = storage.get(STORAGE_KEYS.ACTIVE_TEAM_ID, null)
 
     if (savedTeams) {
       try {
-        const parsedTeams = JSON.parse(savedTeams)
+        const parsedTeams = Array.isArray(savedTeams) ? savedTeams : JSON.parse(String(savedTeams))
         if (Array.isArray(parsedTeams) && parsedTeams.length > 0) {
           setTeams(parsedTeams)
 
           // Set active team ID if it exists in saved teams
           if (savedActiveTeamId && parsedTeams.some((team: Team) => team.id === savedActiveTeamId)) {
-            setActiveTeamId(savedActiveTeamId)
+            setActiveTeamId(String(savedActiveTeamId))
           } else {
             // Default to first team if saved active team doesn't exist
             setActiveTeamId(parsedTeams[0].id)
           }
         }
       } catch (error) {
-        console.error("[v0] Failed to load teams from localStorage:", error)
+        console.error("[Sidebar] Failed to load teams:", error)
         // Keep default initialization if parsing fails
       }
     }
@@ -117,13 +129,13 @@ export function AppSidebar() {
 
   useEffect(() => {
     if (teams.length > 0) {
-      localStorage.setItem("teams", JSON.stringify(teams))
+      storage.set(STORAGE_KEYS.TEAMS, teams)
     }
   }, [teams])
 
   useEffect(() => {
     if (activeTeamId) {
-      localStorage.setItem("activeTeamId", activeTeamId)
+      storage.set(STORAGE_KEYS.ACTIVE_TEAM_ID, activeTeamId)
     }
   }, [activeTeamId])
 
@@ -175,7 +187,7 @@ export function AppSidebar() {
 
       console.log("[v0] Created new team:", newTeam)
       console.log("[v0] Updated teams list:", updatedTeams)
-      console.log("[v0] New team will have full navigation hierarchy:", teamNavigation)
+      console.log("[v0] New team will have full navigation hierarchy with", enabledFeatures.length, "features")
     }
   }
 
@@ -212,6 +224,8 @@ export function AppSidebar() {
   const handleSetActiveTeam = (teamId: string) => {
     setActiveTeamId(teamId)
     setExpandedTeams((prev) => new Set(prev).add(teamId))
+    // Navigate to dashboard when team is selected
+    router.push("/")
   }
 
   return (
@@ -219,7 +233,8 @@ export function AppSidebar() {
       <div
         ref={sidebarRef}
         className={cn(
-          "flex h-full flex-col border-r bg-sidebar text-sidebar-foreground transition-all duration-300 relative",
+          "flex h-full flex-col bg-sidebar text-sidebar-foreground transition-all duration-300 relative",
+          position === "right" ? "border-l" : "border-r",
         )}
         style={{
           width: isCollapsed ? "64px" : `${sidebarWidth}px`,
@@ -228,7 +243,8 @@ export function AppSidebar() {
         {!isCollapsed && (
           <div
             className={cn(
-              "absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-primary/50 transition-colors z-50",
+              "absolute top-0 bottom-0 w-1 cursor-col-resize hover:bg-primary/50 transition-colors z-50",
+              position === "right" ? "left-0" : "right-0",
               isResizing && "bg-primary",
             )}
             onMouseDown={(e) => {
@@ -290,10 +306,11 @@ export function AppSidebar() {
               <CollapsibleTrigger asChild>
                 <button
                   className={cn(
-                    "flex flex-1 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                    "flex flex-1 items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
                     "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground",
                   )}
                   title={isCollapsed ? "Team" : undefined}
+                  suppressHydrationWarning
                 >
                   <Users className="h-5 w-5 shrink-0" />
                   {!isCollapsed && (
@@ -380,7 +397,7 @@ export function AppSidebar() {
                               </button>
                               <button
                                 onClick={() => handleSetActiveTeam(team.id)}
-                                className="flex-1 text-left font-medium"
+                                className="flex-1 text-left font-semibold cursor-pointer"
                               >
                                 {team.name}
                               </button>
@@ -400,22 +417,22 @@ export function AppSidebar() {
                         {/* Nested navigation hierarchy for this team */}
                         {expandedTeams.has(team.id) && (
                           <div className="ml-6 space-y-1 border-l border-sidebar-border pl-4">
-                            {teamNavigation.map((item) => {
-                              const isActive = activeTeamId === team.id && pathname === item.href
+                            {enabledFeatures.map((feature) => {
+                              const isActive = activeTeamId === team.id && pathname === `/${feature.id}`
                               return (
                                 <Link
-                                  key={item.name}
-                                  href={item.href}
+                                  key={feature.id}
+                                  href={`/${feature.id}`}
                                   onClick={() => handleSetActiveTeam(team.id)}
                                   className={cn(
-                                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
                                     isActive
                                       ? "bg-sidebar-primary text-sidebar-primary-foreground"
                                       : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground",
                                   )}
                                 >
-                                  <item.icon className="h-4 w-4 shrink-0" />
-                                  {item.name}
+                                  <feature.icon className="h-4 w-4 shrink-0" />
+                                  {feature.name}
                                 </Link>
                               )
                             })}
@@ -434,7 +451,7 @@ export function AppSidebar() {
           <button
             onClick={() => setIsSettingsOpen(true)}
             className={cn(
-              "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+              "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
               "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground",
             )}
             title={isCollapsed ? "Settings" : undefined}
@@ -477,8 +494,8 @@ export function AppSidebar() {
           </div>
 
           <DialogHeader>
-            <DialogTitle className="text-3xl">Choose a Template</DialogTitle>
-            <DialogDescription className="text-lg">Start with a pre-configured template</DialogDescription>
+            <DialogTitle>Choose a Template</DialogTitle>
+            <DialogDescription>Start with a pre-configured template</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-3 py-4">
@@ -502,7 +519,12 @@ export function AppSidebar() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-xl">{template.name}</span>
+                      <span
+                        className="font-dynamic"
+                        style={{ fontSize: 'calc(var(--base-font-size, 16px) * 1.05)' }}
+                      >
+                        {template.name}
+                      </span>
                       {selectedTemplate === template.id && (
                         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
                           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -511,7 +533,12 @@ export function AppSidebar() {
                         </div>
                       )}
                     </div>
-                    <span className="mt-2 text-base">{template.description}</span>
+                    <span
+                      className="mt-2 font-dynamic"
+                      style={{ fontSize: 'calc(var(--base-font-size, 16px) * 0.9)' }}
+                    >
+                      {template.description}
+                    </span>
                   </div>
                 </div>
               </div>

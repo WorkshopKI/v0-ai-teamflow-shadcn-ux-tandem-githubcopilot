@@ -12,6 +12,8 @@ export const STORAGE_KEYS = {
   THEME: "theme",
   KANBAN_LIGHT_COLORS: "kanban-light-colors",
   KANBAN_DARK_COLORS: "kanban-dark-colors",
+  ENABLED_FEATURES: "enabledFeatures",
+  NOTES: "notes", // Minimal example feature
 } as const
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS]

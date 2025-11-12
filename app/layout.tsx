@@ -1,9 +1,9 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter, Lora, JetBrains_Mono } from "next/font/google"
+import { Inter, JetBrains_Mono, Roboto, Open_Sans, Source_Code_Pro } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
-import { AppSidebar } from "@/components/app-sidebar"
 import { Providers } from "@/components/providers"
+import { LayoutContent } from "./layout-content"
 import "./globals.css"
 
 const inter = Inter({
@@ -12,15 +12,28 @@ const inter = Inter({
   display: "swap",
 })
 
-const lora = Lora({
+const roboto = Roboto({
+  weight: ["300", "400", "500", "700"],
   subsets: ["latin"],
-  variable: "--font-serif",
+  variable: "--font-roboto",
+  display: "swap",
+})
+
+const openSans = Open_Sans({
+  subsets: ["latin"],
+  variable: "--font-open-sans",
   display: "swap",
 })
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
+  display: "swap",
+})
+
+const sourceCodePro = Source_Code_Pro({
+  subsets: ["latin"],
+  variable: "--font-source-code",
   display: "swap",
 })
 
@@ -38,14 +51,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${lora.variable} ${jetbrainsMono.variable} font-sans antialiased`}
+        className={`${inter.variable} ${roboto.variable} ${openSans.variable} ${jetbrainsMono.variable} ${sourceCodePro.variable} font-sans antialiased`}
         suppressHydrationWarning={true}
       >
         <Providers>
-          <div className="flex h-screen overflow-hidden">
-            <AppSidebar />
-            <main className="flex-1 overflow-y-auto">{children}</main>
-          </div>
+          <LayoutContent>{children}</LayoutContent>
         </Providers>
         <Analytics />
       </body>

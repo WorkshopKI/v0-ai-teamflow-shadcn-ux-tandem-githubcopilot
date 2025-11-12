@@ -2,14 +2,16 @@
  * Workflow type definitions
  */
 
+import type { ComponentType } from "react"
+
 export type NodeType = "trigger" | "action" | "condition" | "delay"
 
 export interface WorkflowNode {
   id: string
   type: NodeType
   label: string
-  icon: any
-  config: Record<string, any>
+  icon: ComponentType<{ className?: string }>
+  config: Record<string, unknown>
   position: { x: number; y: number }
 }
 

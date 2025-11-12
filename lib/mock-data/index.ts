@@ -6,3 +6,4 @@
 export { mockTasks } from "./tasks"
 export { mockAgents } from "./agents"
 export { mockWorkflows } from "./workflows"
+export { mockNotes } from "./notes"

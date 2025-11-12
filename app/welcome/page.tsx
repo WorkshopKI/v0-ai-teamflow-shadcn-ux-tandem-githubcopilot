@@ -115,7 +115,7 @@ export default function WelcomePage() {
       <div className="flex items-center gap-2 rounded-full bg-muted px-6 py-3 text-sm">
         <Lock className="h-4 w-4" />
         <Sparkles className="h-4 w-4" />
-        <span className="font-medium">Local environment ready – no server required!</span>
+        <span className="font-dynamic">Local environment ready – no server required!</span>
         <Sparkles className="h-4 w-4" />
       </div>
     </div>

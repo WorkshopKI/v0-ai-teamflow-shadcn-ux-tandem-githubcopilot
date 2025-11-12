@@ -1,6 +1,91 @@
-# TeamFlow - AI Collaborative App
+# TeamFlow - Radically Simple & Extensible
 
-A local-first collaborative platform with AI agents, built with Next.js 16, React 19, and Tailwind CSS v4.
+A modular collaborative platform with **plugin-based feature architecture** that makes it radically simple to add or remove functionality.
+
+## 🚀 Quick Start
+
+```bash
+pnpm install
+pnpm dev
+```
+
+Open http://localhost:3000
+
+## 🎯 Philosophy: Radical Simplicity
+
+**Minimal Core** + **Plugin Features** = Maximum Extensibility
+
+- ✅ Core handles layout, routing, settings
+- ✅ Features are self-contained modules
+- ✅ Enable/disable features in Settings
+- ✅ Add features without touching core
+
+## 📁 Architecture
+
+```
+features/                 # 👈 Drop-in feature modules
+  tasks/
+    index.ts             # Feature registration
+    page.tsx             # Main UI
+    components/          # Feature components
+  agents/
+  workflows/
+  templates/
+
+app/
+  [feature]/page.tsx     # Dynamic feature loader
+  layout.tsx             # Core layout only
+  
+lib/features/            # Feature registry system
+```
+
+## ✨ Adding a New Feature (3 Steps)
+
+### 1. Create Feature Folder
+```bash
+mkdir features/analytics
+```
+
+### 2. Create Page Component
+```typescript
+// features/analytics/page.tsx
+export default function AnalyticsPage() {
+  return <div><h1>Analytics</h1></div>
+}
+```
+
+### 3. Register Feature
+```typescript
+// features/analytics/index.ts
+import { BarChart } from "lucide-react"
+import { featureRegistry } from "@/lib/features"
+import AnalyticsPage from "./page"
+
+featureRegistry.register({
+  id: "analytics",
+  name: "Analytics",
+  description: "Business intelligence dashboard",
+  icon: BarChart,
+  enabled: true,
+  component: AnalyticsPage,
+})
+
+export { default } from "./page"
+```
+
+**That's it!** Feature is now accessible at `/analytics`, appears in sidebar, and is toggleable.
+
+## 🤖 AI Agent Documentation
+
+**For AI agents and developers**:
+- 🚀 **[AI Agent Guide](./docs/agent-guide.md)** - Quick reference for AI coding agents
+- 📖 **[Documentation Hub](./docs/README.md)** - Complete documentation index
+- 📚 **Detailed Guides**:
+  - [Feature Creation](./docs/feature-creation.md) - Adding new features
+  - [Storage Patterns](./docs/storage.md) - Persistence abstraction
+  - [Component Patterns](./docs/components.md) - UI composition
+  - [TypeScript Guide](./docs/typescript.md) - Strict mode patterns
+  - [Testing Guide](./docs/testing.md) - Testing strategy
 
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/kilabteam-2501s-projects/v0-ai-collaborative-platform)
 [![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/e3ttGFonQzv)
@@ -69,12 +154,15 @@ pnpm format:check # Check code formatting
 ├── components/       # React components
 │   ├── ui/          # shadcn/ui primitives
 │   └── resizable-dialog/  # Reusable components
-├── lib/             # Utilities and context
-├── data/            # Static data and templates
-└── styles/          # Global styles
+├── features/        # Feature modules (plugin architecture)
+├── lib/             # Utilities, context, hooks
+├── docs/            # Documentation
+│   ├── ARCHITECTURE.md
+│   └── CONTRIBUTING.md
+└── tests/           # Vitest tests
 ```
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed architecture and conventions.
+See [docs/agent-guide.md](./docs/agent-guide.md) for AI agent quick reference and [docs/](./docs/) for all documentation.
 
 ## Key Components
 
@@ -118,12 +206,14 @@ vercel deploy
 
 ## Contributing
 
-We welcome contributions! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for:
+We welcome contributions! Please read [docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md) for:
 - Development workflow
 - Coding conventions
 - Component patterns
 - TypeScript guidelines
 - AI agent guidelines
+
+**For AI Agents**: Start with [docs/agent-guide.md](./docs/agent-guide.md) for quick reference patterns.
 
 ## License
 
@@ -132,5 +222,9 @@ We welcome contributions! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for:
 ## Links
 
 - **v0.app Chat**: [https://v0.app/chat/e3ttGFonQzv](https://v0.app/chat/e3ttGFonQzv)
-- **Documentation**: See CONTRIBUTING.md
+- **Documentation**: 
+  - [Documentation Hub](./docs/README.md)
+  - [AI Agent Guide](./docs/agent-guide.md)
+  - [Contributing Guide](./docs/CONTRIBUTING.md)
+  - [Architecture](./docs/ARCHITECTURE.md)
 - **Issues**: [GitHub Issues](https://github.com/WorkshopKI/v0-ai-teamflow-shadcn-ux/issues)

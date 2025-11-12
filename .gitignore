@@ -25,3 +25,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# AI agent temp files
+.v0/
+.cursor/
+.windsurf/
+.cline/
+
+# Local database files
+*.db
+*.sqlite
+*.sqlite3

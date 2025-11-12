@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useCallback, type RefObject } from "react"
+import { useEffect, useState, useCallback } from "react"
 
 export interface ResizableDialogDimensions {
     width: number
