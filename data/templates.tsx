@@ -46,6 +46,7 @@ export const teamTemplates = [
       "Perfect for development teams using Agile methodologies with sprint planning and code review workflows",
     icon: Monitor,
     iconColor: "text-blue-500",
+    recommendedAgentIds: ["1", "2"],
   },
   {
     id: "marketing",
@@ -53,6 +54,7 @@ export const teamTemplates = [
     description: "Organize campaigns, content calendars, and creative workflows with AI-powered copywriting assistance",
     icon: Megaphone,
     iconColor: "text-pink-500",
+    recommendedAgentIds: ["3"],
   },
   {
     id: "blank",
@@ -60,6 +62,7 @@ export const teamTemplates = [
     description: "Start from scratch with a minimal setup - perfect for any team or workflow",
     icon: ClipboardList,
     iconColor: "text-gray-500",
+    recommendedAgentIds: [],
   },
   {
     id: "government",
@@ -67,5 +70,6 @@ export const teamTemplates = [
     description: "For processing citizen and business applications with 10 specialized AI assistants",
     icon: Building2,
     iconColor: "text-purple-500",
+    recommendedAgentIds: ["1", "2", "3"],
   },
 ]

@@ -10,6 +10,6 @@ export type { Agent, AgentStatus, AgentType } from "./agent"
 
 export type { Workflow, WorkflowNode, NodeType } from "./workflow"
 
-export type { Team } from "./team"
+export type { Team, TeamMember, TeamMemberType } from "./team"
 
 export type { Note, NoteFormData } from "./note"
